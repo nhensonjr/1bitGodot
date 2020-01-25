@@ -23,6 +23,9 @@ config/icon="res://icon.png"
 
 window/size/width=320
 window/size/height=180
+window/size/test_width=1280
+window/size/test_height=720
+window/stretch/mode="2d"
 
 [importer_defaults]
 
@@ -46,6 +49,11 @@ texture={
 "stream": false,
 "svg/scale": 1.0
 }
+
+[layer_names]
+
+2d_physics/layer_1="Pig"
+2d_physics/layer_2="Apples"
 
 [rendering]
 
