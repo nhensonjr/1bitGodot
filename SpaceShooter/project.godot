@@ -15,8 +15,8 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Piggy"
-run/main_scene="res://World.tscn"
+config/name="SpaceShooter"
+run/main_scene="res://StartMenu.tscn"
 config/icon="res://icon.png"
 
 [display]
@@ -50,12 +50,8 @@ texture={
 "svg/scale": 1.0
 }
 
-[layer_names]
-
-2d_physics/layer_1="Pig"
-2d_physics/layer_2="Apples"
-
 [rendering]
 
-quality/driver/driver_name="GLES2"
+vram_compression/import_etc=true
+vram_compression/import_etc2=false
 environment/default_environment="res://default_env.tres"
