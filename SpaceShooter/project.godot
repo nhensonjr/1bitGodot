@@ -17,7 +17,12 @@ _global_script_class_icons={
 
 config/name="SpaceShooter"
 run/main_scene="res://StartMenu.tscn"
-config/icon="res://icon.png"
+config/icon="res://Resources/Ship.png"
+
+[autoload]
+
+Music="*res://Music.tscn"
+SaveAndLoad="*res://SaveAndLoad.gd"
 
 [display]
 

@@ -36,3 +36,4 @@ custom_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Score = 0"
 align = 1
 valign = 1
+[connection signal="player_death" from="Ship" to="." method="_on_Ship_player_death"]
