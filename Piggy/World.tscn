@@ -20,28 +20,106 @@ position = Vector2( 77.6691, 55.1859 )
 position = Vector2( 65.9895, 122.051 )
 
 [node name="Apple2" parent="." instance=ExtResource( 2 )]
-position = Vector2( 241.475, 117.38 )
+position = Vector2( 240.599, 143.367 )
 
 [node name="Apple3" parent="." instance=ExtResource( 2 )]
 position = Vector2( 288.777, 109.204 )
 
 [node name="Apple4" parent="." instance=ExtResource( 2 )]
-position = Vector2( 58.3978, 24.5271 )
+position = Vector2( 79.421, 19.5633 )
 
 [node name="Apple5" parent="." instance=ExtResource( 2 )]
-position = Vector2( 138.695, 108.036 )
+position = Vector2( 157.382, 91.3926 )
 
 [node name="Apple6" parent="." instance=ExtResource( 2 )]
-position = Vector2( 166.726, 65.4056 )
+position = Vector2( 206.728, 65.4056 )
 
 [node name="Apple7" parent="." instance=ExtResource( 2 )]
-position = Vector2( 25.403, 91.9766 )
+position = Vector2( 45.2582, 91.1006 )
+
+[node name="Apple27" parent="." instance=ExtResource( 2 )]
+position = Vector2( 256.366, 98.4004 )
+
+[node name="Apple28" parent="." instance=ExtResource( 2 )]
+position = Vector2( 156.506, 124.387 )
+
+[node name="Apple29" parent="." instance=ExtResource( 2 )]
+position = Vector2( 174.609, 145.995 )
+
+[node name="Apple30" parent="." instance=ExtResource( 2 )]
+position = Vector2( 202.932, 118.84 )
+
+[node name="Apple31" parent="." instance=ExtResource( 2 )]
+position = Vector2( 220.159, 94.8965 )
+
+[node name="Apple32" parent="." instance=ExtResource( 2 )]
+position = Vector2( 201.764, 163.222 )
+
+[node name="Apple33" parent="." instance=ExtResource( 2 )]
+position = Vector2( 256.658, 165.558 )
+
+[node name="Apple34" parent="." instance=ExtResource( 2 )]
+position = Vector2( 285.273, 153.586 )
+
+[node name="Apple35" parent="." instance=ExtResource( 2 )]
+position = Vector2( 274.761, 126.723 )
+
+[node name="Apple36" parent="." instance=ExtResource( 2 )]
+position = Vector2( 301.624, 80.8811 )
 
 [node name="Apple8" parent="." instance=ExtResource( 2 )]
-position = Vector2( 218.408, 82.9249 )
+position = Vector2( 243.811, 66.8655 )
 
 [node name="Apple9" parent="." instance=ExtResource( 2 )]
-position = Vector2( 135.191, 29.4909 )
+position = Vector2( 159.718, 19.2713 )
 
 [node name="Apple10" parent="." instance=ExtResource( 2 )]
-position = Vector2( 248.483, 63.0696 )
+position = Vector2( 279.142, 46.1343 )
+
+[node name="Apple11" parent="." instance=ExtResource( 2 )]
+position = Vector2( 251.111, 28.031 )
+
+[node name="Apple12" parent="." instance=ExtResource( 2 )]
+position = Vector2( 214.028, 35.0387 )
+
+[node name="Apple13" parent="." instance=ExtResource( 2 )]
+position = Vector2( 174.61, 41.1704 )
+
+[node name="Apple14" parent="." instance=ExtResource( 2 )]
+position = Vector2( 126.432, 71.8293 )
+
+[node name="Apple15" parent="." instance=ExtResource( 2 )]
+position = Vector2( 88.7652, 91.1005 )
+
+[node name="Apple16" parent="." instance=ExtResource( 2 )]
+position = Vector2( 101.613, 123.511 )
+
+[node name="Apple17" parent="." instance=ExtResource( 2 )]
+position = Vector2( 141.907, 149.206 )
+
+[node name="Apple18" parent="." instance=ExtResource( 2 )]
+position = Vector2( 108.036, 161.178 )
+
+[node name="Apple19" parent="." instance=ExtResource( 2 )]
+position = Vector2( 75.0417, 162.054 )
+
+[node name="Apple20" parent="." instance=ExtResource( 2 )]
+position = Vector2( 42.923, 148.33 )
+
+[node name="Apple21" parent="." instance=ExtResource( 2 )]
+position = Vector2( 24.2357, 128.767 )
+
+[node name="Apple22" parent="." instance=ExtResource( 2 )]
+position = Vector2( 25.9876, 67.1575 )
+
+[node name="Apple23" parent="." instance=ExtResource( 2 )]
+position = Vector2( 44.3829, 43.2144 )
+
+[node name="Apple24" parent="." instance=ExtResource( 2 )]
+position = Vector2( 27.4476, 13.4315 )
+
+[node name="Apple25" parent="." instance=ExtResource( 2 )]
+position = Vector2( 126.432, 19.8553 )
+
+[node name="Apple26" parent="." instance=ExtResource( 2 )]
+position = Vector2( 146.287, 49.9301 )

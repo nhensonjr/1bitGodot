@@ -4,6 +4,7 @@ export(int) var SPEED = 50
 var moving = false
 onready var animPlayer = $AnimationPlayer
 onready var pig = $Sprite
+onready var collision = $Collision
 
 func _process(delta):
 	moving = false
@@ -17,6 +18,8 @@ func _process(delta):
 		move(0, -SPEED, delta)
 	if Input.is_action_pressed("ui_down"):
 		move(0, SPEED, delta)
+	if Input.is_action_just_pressed("ui_cancel"):
+		get_tree().quit()
 		
 	if moving == true:
 		animPlayer.play("Run")
@@ -31,4 +34,5 @@ func move(xSpeed, ySpeed, delta):
 
 func _on_Pig_area_entered(area):
 	pig.scale *= 1.1
+	collision.scale *= 1.1
 	area.queue_free()
