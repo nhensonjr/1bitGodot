@@ -1,41 +1,86 @@
 extends KinematicBody2D
 
 const DustEffect = preload("res://Effects/DustEffect.tscn")
+const WallDustEffect = preload("res://Effects/WallDustEffect.tscn")
 const PlayerBullet = preload("res://Player/PlayerBullet.tscn")
 const JumpEffect = preload("res://Effects/JumpEffect.tscn")
+const PlayerMissile = preload("res://Player/PlayerMissile.tscn")
 
 export(int) var ACCELERATION = 512
 export(int) var MAX_SPEED = 64
 export(float) var FRICTION = 0.25
 export(int) var GRAVITY = 200
+export(int) var WALL_SLIDE_SPEED = 40
+export(int) var MAX_WALL_SLIDE_SPEED = 50
 export(int) var JUMP_FORCE = 128
 export(int) var MAX_SLOPE_ANGLE = 46
 export(int) var BULLET_SPEED = 250
+export(int) var MISSILE_BULLET_SPEED = 150
 
+enum {
+	MOVE,
+	WALL_SLIDE
+}
+
+var PlayerStats: PlayerStats = ResourceLoader.PlayerStats
+var MainInstances = ResourceLoader.MainInstances
+var invincible = false setget set_invincible
+var state = MOVE
 var motion = Vector2.ZERO
 var snap_vector = Vector2.ZERO
 var just_jumped = false
+var double_jump = true
 
 onready var sprite = $Sprite
 onready var spriteAnimator = $SpriteAnimator
+onready var blinkAnimator = $BlinkAnimator
 onready var coyoteJumpTimer = $CoyoteJumpTimer
 onready var fireBulletTimer = $FireBulletTimer
 onready var gun = $Sprite/PlayerGun
 onready var muzzle = $Sprite/PlayerGun/Sprite/Muzzle
+onready var powerUpDetector = $PowerUpDetector
+
+
+func _ready():
+	PlayerStats.connect("player_died", self, "on_died")
+	MainInstances.Player = self
+
+
+func _exit_tree():
+	MainInstances.Player = null
+
 
 func _physics_process(delta) -> void:
 	just_jumped = false
-	var input_vector = get_input_vector()
-	apply_horizontal_force(input_vector, delta)
-	apply_friction(input_vector)
-	update_snap_vector()
-	jump_check()
-	apply_gravity(delta)
-	update_animation(input_vector)
-	move()
-	
+	match state:
+		MOVE:
+			var input_vector = get_input_vector()
+			apply_horizontal_force(input_vector, delta)
+			apply_friction(input_vector)
+			update_snap_vector()
+			jump_check()
+			apply_gravity(delta)
+			update_animation(input_vector)
+			move()
+			wall_slide_check()
+		WALL_SLIDE:
+			spriteAnimator.play("Wall Slide")
+			var wall_axis = get_wall_axis()
+			if wall_axis != 0:
+				sprite.scale.x = wall_axis
+			
+			wall_slide_jump_check(wall_axis)
+			wall_slide_drop(delta)
+			move()
+			wall_detach(wall_axis, delta)
+			
 	if Input.is_action_pressed("fire") and fireBulletTimer.time_left == 0:
 		fire_bullet()
+	
+	if Input.is_action_pressed("fire_missle") and fireBulletTimer.time_left == 0:
+		if PlayerStats.missiles > 0 and PlayerStats.missiles_unlocked:
+			fire_missile()
+
 
 func fire_bullet():
 	var bullet = Utils.instance_scene_on_main(PlayerBullet, muzzle.global_position)
@@ -44,47 +89,75 @@ func fire_bullet():
 	bullet.rotation = bullet.velocity.angle()
 	fireBulletTimer.start()
 
+
+func fire_missile():
+	var missile = Utils.instance_scene_on_main(PlayerMissile, muzzle.global_position)
+	missile.velocity = Vector2.RIGHT.rotated(gun.rotation) * MISSILE_BULLET_SPEED
+	missile.velocity.x *= sprite.scale.x
+	motion -= missile.velocity * 0.25
+	missile.rotation = missile.velocity.angle()
+	fireBulletTimer.start()
+	PlayerStats.missiles -= 1
+
+
 func create_dust_effect():
 	var dust_position = global_position
 	dust_position.x += rand_range(-4, 4)
 	Utils.instance_scene_on_main(DustEffect, dust_position)
+
 
 func get_input_vector() -> Vector2:
 	var input_vector = Vector2.ZERO
 	input_vector.x = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
 	return input_vector
 
+
 func apply_horizontal_force(input_vector: Vector2, delta: float) -> void:
 	if input_vector.x != 0:
 		motion.x += input_vector.x * ACCELERATION * delta
 		motion.x = clamp(motion.x, -MAX_SPEED, MAX_SPEED)
 
+
 func apply_friction(input_vector: Vector2) -> void:
 	if input_vector.x == 0 and is_on_floor():
 		motion.x = lerp(motion.x, 0, FRICTION)
+
 
 func update_snap_vector():
 	if is_on_floor():
 		snap_vector = Vector2.DOWN
 
+
 func jump_check() -> void:
 	if is_on_floor() or coyoteJumpTimer.time_left > 0:
 		if Input.is_action_just_pressed("ui_up"):
-			Utils.instance_scene_on_main(JumpEffect, global_position)
-			motion.y = -JUMP_FORCE
+			jump(JUMP_FORCE)
 			just_jumped = true
-			snap_vector = Vector2.ZERO
 	else:
 		if Input.is_action_just_released("ui_up") and motion.y < -JUMP_FORCE/2:
 			motion.y = -JUMP_FORCE/2
+		
+		if Input.is_action_just_pressed("ui_up") && double_jump == true:
+			jump(JUMP_FORCE * .75)
+			double_jump = false
+
+
+func jump(force):
+	Utils.instance_scene_on_main(JumpEffect, global_position)
+	motion.y = -force
+	snap_vector = Vector2.ZERO
+
 
 func apply_gravity(delta: float) -> void:
 	if not is_on_floor():
 		motion.y += GRAVITY * delta
 		motion.y = min(motion.y, JUMP_FORCE)
 
+
 func update_animation(input_vector):
-	sprite.scale.x = sign(get_local_mouse_position().x)
+	var facing = sign(get_local_mouse_position().x)
+	if facing != 0:
+		sprite.scale.x = facing
 	if input_vector.x != 0:
 		spriteAnimator.play("Run")
 		spriteAnimator.playback_speed = input_vector.x * sprite.scale.x
@@ -94,6 +167,7 @@ func update_animation(input_vector):
 	
 	if not is_on_floor():
 		spriteAnimator.play("Jump")
+
 
 func move() -> void:
 	var was_in_air = not is_on_floor()
@@ -107,6 +181,7 @@ func move() -> void:
 	if was_in_air and is_on_floor():
 		motion.x = last_motion.x
 		Utils.instance_scene_on_main(JumpEffect, global_position)
+		double_jump = true
 	
 	# Just left ground
 	if was_on_floor and not is_on_floor() and not just_jumped:
@@ -119,18 +194,63 @@ func move() -> void:
 		position.x = last_position.x
 
 
+func wall_slide_check():
+	if not is_on_floor() and is_on_wall():
+		state = WALL_SLIDE
+		double_jump = true
+		create_dust_effect()
 
 
+func get_wall_axis() -> int:
+	var is_right_wall = test_move(transform, Vector2.RIGHT)
+	var is_left_wall = test_move(transform, Vector2.LEFT)
+	return int(is_left_wall) - int(is_right_wall)
 
 
+func wall_slide_jump_check(wall_axis):
+	if Input.is_action_just_pressed("ui_up"):
+		motion.x = wall_axis * MAX_SPEED
+		motion.y = -JUMP_FORCE / 1.25
+		state = MOVE
+		var dust_position = global_position + Vector2(wall_axis * 4, -2)
+		var dust = Utils.instance_scene_on_main(WallDustEffect, dust_position)
+		dust.scale.x = wall_axis
+
+func wall_slide_drop(delta):
+	var max_slide_speed = WALL_SLIDE_SPEED
+	if Input.is_action_pressed("ui_down"):
+		max_slide_speed = MAX_WALL_SLIDE_SPEED
+		
+	motion.y = min(motion.y + GRAVITY * delta, max_slide_speed)
 
 
+func wall_detach(wall_axis, delta):
+	if Input.is_action_just_pressed("ui_right"):
+		motion.x = ACCELERATION * delta
+		state = MOVE
+	
+	if Input.is_action_just_pressed("ui_left"):
+		motion.x = -ACCELERATION * delta
+		state = MOVE
+	
+	if wall_axis == 0 or is_on_floor():
+		state = MOVE
 
 
+func set_invincible(value):
+	invincible = value
 
 
+func _on_HurtBox_hit(damage):
+	if not invincible:
+		PlayerStats.health -= damage
+		blinkAnimator.play("Blink")
 
 
+func on_died():
+	queue_free()
 
 
-
+func _on_PowerUpDetector_area_entered(area):
+	if area is PowerUp:
+		area._pickup()
